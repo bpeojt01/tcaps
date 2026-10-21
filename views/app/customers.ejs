@@ -1,0 +1,16 @@
+<% const qv = new URLSearchParams(list.qs); %>
+<form class="filters" method="get">
+  <div class="grow"><label for="q">Search</label><input id="q" name="q" value="<%= qv.get('q') || '' %>" placeholder="Name, phone, email or customer ID"></div>
+  <div><label><input type="checkbox" name="owing" value="1" <%= qv.get('owing') ? 'checked' : '' %>> With balance owing</label></div>
+  <div class="btnrow"><button class="btn">Search</button><a class="btn ghost" href="/app/customers">Reset</a><a class="btn alt" href="/app/customers/new">+ New customer</a></div>
+</form>
+<div class="tw"><table>
+  <thead><tr><%- include('../partials/th', { list, label: 'ID', key: 'code' }) %><%- include('../partials/th', { list, label: 'Name', key: 'name' }) %><th>Contact</th><th class="num">Requests</th><th class="num">Bookings</th><%- include('../partials/th', { list, label: 'Balance owing', key: 'balance', cls: 'num' }) %><%- include('../partials/th', { list, label: 'Registered', key: 'date' }) %></tr></thead>
+  <tbody>
+  <% list.rows.forEach(function (c) { %>
+    <tr><td><a href="/app/customers/<%= c.id %>"><%= c.code %></a></td><td><a href="/app/customers/<%= c.id %>"><%= c.name %></a></td><td><%= c.phone %><br><span class="muted small"><%= c.email %></span></td>
+    <td class="num"><%= c.n_req %></td><td class="num"><%= c.n_bk %></td><td class="num"><%= c.balance ? U.peso(c.balance) : '—' %></td><td class="nowrap"><%= c.created_at.slice(0, 10) %></td></tr>
+  <% }) %>
+  <% if (!list.rows.length) { %><tr><td colspan="7" class="empty">No customers found.</td></tr><% } %>
+  </tbody></table></div>
+<%- include('../partials/pager', { list }) %>

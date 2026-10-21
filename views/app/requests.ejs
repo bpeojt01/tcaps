@@ -1,0 +1,21 @@
+<% const qv = new URLSearchParams(list.qs); const g = (k) => qv.get(k) || ''; %>
+<form class="card filters" method="get">
+  <div class="grow"><label for="q">Search</label><input id="q" name="q" value="<%= g('q') %>" placeholder="Reference, customer, phone, email"></div>
+  <div><label>Status</label><select name="status"><option value="">All</option><option value="open" <%= g('status') === 'open' ? 'selected' : '' %>>All open</option><% B.STATUSES.forEach(function (s) { %><option <%= g('status') === s ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+  <div><label>Service</label><select name="service"><option value="">All</option><% B.SERVICE_TYPES.forEach(function (s) { %><option <%= g('service') === s ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+  <div><label>Assigned to</label><select name="employee"><option value="">Anyone</option><% staff.forEach(function (s) { %><option value="<%= s.id %>" <%= g('employee') === String(s.id) ? 'selected' : '' %>><%= s.name %></option><% }) %></select></div>
+  <div><label>From</label><input type="date" name="from" value="<%= g('from') %>"></div>
+  <div><label>To</label><input type="date" name="to" value="<%= g('to') %>"></div>
+  <div class="btnrow"><button class="btn">Filter</button><a class="btn ghost" href="/app/requests">Reset</a><a class="btn alt" href="/app/requests/new">+ Register request</a></div>
+</form>
+<div class="tw"><table>
+  <thead><tr><%- include('../partials/th', { list, label: 'Reference', key: 'ref' }) %><%- include('../partials/th', { list, label: 'Customer', key: 'customer' }) %><th>Service</th><%- include('../partials/th', { list, label: 'Status', key: 'status' }) %><th>Source</th><th>Assigned</th><%- include('../partials/th', { list, label: 'Received', key: 'date' }) %></tr></thead>
+  <tbody>
+  <% list.rows.forEach(function (r) { %>
+    <tr><td><a href="/app/requests/<%= r.id %>"><%= r.ref %></a></td><td><a href="/app/customers/<%= r.customer_id %>"><%= r.customer %></a></td><td><%= r.service_type %></td>
+    <td><span class="badge <%= r.status === 'Pending Review' ? 'b-warn' : ['Completed', 'Booked / Confirmed'].includes(r.status) ? 'b-ok' : ['Cancelled', 'Rejected'].includes(r.status) ? 'b-err' : 'b-info' %>"><%= r.status %></span></td>
+    <td><%= r.source %></td><td><%= r.employee || '—' %></td><td class="nowrap"><%= r.created_at.slice(0, 16) %></td></tr>
+  <% }) %>
+  <% if (!list.rows.length) { %><tr><td colspan="7" class="empty">No requests found.</td></tr><% } %>
+  </tbody></table></div>
+<%- include('../partials/pager', { list }) %>

@@ -1,0 +1,23 @@
+<% const qv = new URLSearchParams(list.qs); const g = (k) => qv.get(k) || ''; %>
+<form class="card filters" method="get">
+  <div class="grow"><label for="q">Search</label><input id="q" name="q" value="<%= g('q') %>" placeholder="Booking ref, customer, supplier, ticket ref"></div>
+  <div><label>Status</label><select name="status"><option value="">All</option><% B.BOOKING_STATUSES.forEach(function (s) { %><option <%= g('status') === s ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+  <div><label>Payment</label><select name="pay"><option value="">All</option><% ['Unpaid', 'Partially Paid', 'Paid', 'Overpaid'].forEach(function (s) { %><option <%= g('pay') === s ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+  <div><label>Service</label><select name="service"><option value="">All</option><% B.SERVICE_TYPES.forEach(function (s) { %><option <%= g('service') === s ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+  <div><label>Employee</label><select name="employee"><option value="">Anyone</option><% staff.forEach(function (s) { %><option value="<%= s.id %>" <%= g('employee') === String(s.id) ? 'selected' : '' %>><%= s.name %></option><% }) %></select></div>
+  <div><label>From</label><input type="date" name="from" value="<%= g('from') %>"></div>
+  <div><label>To</label><input type="date" name="to" value="<%= g('to') %>"></div>
+  <div class="btnrow"><button class="btn">Filter</button><a class="btn ghost" href="/app/bookings">Reset</a><a class="btn alt" href="/app/bookings/new">+ New booking</a></div>
+</form>
+<div class="tw"><table>
+  <thead><tr><%- include('../partials/th', { list, label: 'Booking', key: 'ref' }) %><%- include('../partials/th', { list, label: 'Customer', key: 'customer' }) %><th>Service</th><%- include('../partials/th', { list, label: 'Status', key: 'status' }) %><%- include('../partials/th', { list, label: 'Total', key: 'total', cls: 'num' }) %><th class="num">Paid</th><th class="num">Balance</th><th>Payment</th><th>Employee</th><%- include('../partials/th', { list, label: 'Date', key: 'date' }) %></tr></thead>
+  <tbody>
+  <% list.rows.forEach(function (b) { %>
+    <tr class="<%= b.status === 'Cancelled' ? 'off' : '' %>"><td><a href="/app/bookings/<%= b.id %>"><%= b.ref %></a></td><td><a href="/app/customers/<%= b.customer_id %>"><%= b.customer %></a></td><td><%= b.service_type %></td>
+    <td><span class="badge <%= { Quoted: 'b-warn', Confirmed: 'b-info', Completed: 'b-ok', Cancelled: 'b-err' }[b.status] %>"><%= b.status %></span></td>
+    <td class="num"><%= U.peso(b.total) %></td><td class="num"><%= U.peso(b.paid) %></td><td class="num"><%= U.peso(b.balance) %></td>
+    <td><span class="badge <%= { Paid: 'b-ok', Overpaid: 'b-warn', Unpaid: 'b-err' }[b.pay_status] || '' %>"><%= b.pay_status %></span></td><td><%= b.employee || '—' %></td><td class="nowrap"><%= b.created_at.slice(0, 10) %></td></tr>
+  <% }) %>
+  <% if (!list.rows.length) { %><tr><td colspan="10" class="empty">No bookings found.</td></tr><% } %>
+  </tbody></table></div>
+<%- include('../partials/pager', { list }) %>

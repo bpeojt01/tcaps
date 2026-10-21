@@ -1,0 +1,13 @@
+<%# locals: entity, id, notes %>
+<div class="card">
+  <h3>Internal notes</h3>
+  <form method="post" action="/app/notes" class="row" style="align-items:start">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="entity" value="<%= entity %>"><input type="hidden" name="entity_id" value="<%= id %>">
+    <textarea name="body" rows="2" maxlength="2000" placeholder="Add an internal note (not visible to customers)" required style="flex:1;min-width:220px"></textarea>
+    <button class="btn">Add note</button>
+  </form>
+  <ul class="timeline">
+    <% notes.forEach(function (n) { %><li><div><%= n.body %></div><div class="small muted"><%= n.author || 'System' %> · <%= n.at.slice(0, 16) %></div></li><% }) %>
+    <% if (!notes.length) { %><li class="muted small">No notes yet.</li><% } %>
+  </ul>
+</div>

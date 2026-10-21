@@ -1,0 +1,5 @@
+<p><a class="btn alt" href="/app/employees/new">+ New employee</a></p>
+<div class="tw"><table><thead><tr><th>No.</th><th>Name</th><th>Username</th><th>Role</th><th>Schedule</th><th>Grace</th><th>Expenses</th><th>Status</th><th></th></tr></thead><tbody>
+  <% users.forEach(function (u) { %><tr class="<%= u.active ? '' : 'off' %>"><td><%= u.emp_no %></td><td><%= u.name %></td><td><%= u.username %></td><td><%= u.role %></td><td><%= u.sched_start %>–<%= u.sched_end %></td><td><%= u.grace_min %> min</td>
+    <td><%= u.can_expenses ? 'Yes' : 'No' %></td><td><span class="badge <%= u.active ? 'b-ok' : 'b-err' %>"><%= u.active ? 'Active' : 'Deactivated' %></span></td><td><a href="/app/employees/<%= u.id %>">Edit</a></td></tr><% }) %>
+</tbody></table></div>

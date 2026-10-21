@@ -1,0 +1,14 @@
+<% services.concat([{ id: '', name: '', type: '', description: '', icon: '', active: 1, sort: services.length }]).forEach(function (s) { %>
+  <form class="card" method="post" action="/app/services">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= s.id %>">
+    <h3><%= s.id ? 'Edit service' : 'Add service' %></h3>
+    <div class="grid g3">
+      <div class="field"><label>Name</label><input name="name" value="<%= s.name %>" required maxlength="120"></div>
+      <div class="field"><label>Request form type</label><select name="type" required><% B.SERVICE_TYPES.forEach(function (t) { %><option <%= t === s.type ? 'selected' : '' %>><%= t %></option><% }) %></select></div>
+      <div class="field"><label>Icon (emoji) / order</label><div class="row"><input name="icon" value="<%= s.icon %>" maxlength="8" style="width:80px"><input name="sort" type="number" value="<%= s.sort %>" style="width:80px"></div></div>
+    </div>
+    <div class="field"><label>Description</label><textarea name="description" rows="2" maxlength="600"><%= s.description %></textarea></div>
+    <label style="font-weight:400"><input type="checkbox" name="active" <%= s.active ? 'checked' : '' %>> Shown on website</label>
+    <button class="btn sm"><%= s.id ? 'Save' : 'Add' %></button>
+  </form>
+<% }) %>

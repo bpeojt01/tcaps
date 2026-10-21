@@ -1,0 +1,25 @@
+<% const qv = new URLSearchParams(list.qs); const g = (k) => qv.get(k) || ''; %>
+<form class="card" method="post" action="/app/expenses?_csrf=<%= csrf %>" enctype="multipart/form-data">
+  <h3>Record an expense</h3>
+  <div class="grid g4">
+    <div class="field"><label>Date *</label><input type="date" name="spent_at" value="<%= U.today() %>" max="<%= U.today() %>" required></div>
+    <div class="field"><label>Category *</label><select name="category" required><% B.EXPENSE_CATS.forEach(function (c) { %><option><%= c %></option><% }) %></select></div>
+    <div class="field"><label>Amount (₱) *</label><input type="number" name="amount" step="0.01" min="0.01" required></div>
+    <div class="field"><label>Payment method *</label><select name="method" required><% B.METHODS.forEach(function (m) { %><option><%= m %></option><% }) %></select></div>
+  </div>
+  <div class="grid g2"><div class="field"><label>Description *</label><input name="description" maxlength="500" required></div><div class="field"><label>Receipt (PDF/JPG/PNG, max 5 MB)</label><input type="file" name="receipt" accept=".pdf,.jpg,.jpeg,.png"></div></div>
+  <button class="btn">Save expense</button>
+</form>
+<form class="filters" method="get">
+  <div class="grow"><label>Search</label><input name="q" value="<%= g('q') %>"></div>
+  <div><label>Category</label><select name="category"><option value="">All</option><% B.EXPENSE_CATS.forEach(function (c) { %><option <%= g('category') === c ? 'selected' : '' %>><%= c %></option><% }) %></select></div>
+  <div><label>From</label><input type="date" name="from" value="<%= g('from') %>"></div><div><label>To</label><input type="date" name="to" value="<%= g('to') %>"></div>
+  <div class="btnrow"><button class="btn">Filter</button><a class="btn ghost" href="/app/expenses?<%= list.qs %>&export=csv">Export CSV</a></div>
+</form>
+<p><strong>Total (valid) for this filter: <%= U.peso(total) %></strong></p>
+<div class="tw"><table><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Method</th><th class="num">Amount</th><th>By</th><th>Receipt</th><th></th></tr></thead><tbody>
+  <% list.rows.forEach(function (e) { %><tr class="<%= e.status === 'Voided' ? 'off' : '' %>"><td class="nowrap"><%= e.spent_at %></td><td><%= e.category %></td><td><%= e.description %><%= e.status === 'Voided' ? ' — VOIDED: ' + e.void_reason : '' %></td><td><%= e.method %></td><td class="num"><%= U.peso(e.amount) %></td><td><%= e.recorder %></td>
+    <td><% if (e.receipt) { %><a href="/app/files/receipt/<%= e.id %>">View</a><% } %></td>
+    <td><% if (me.role === 'owner' && e.status === 'Valid') { %><form method="post" action="/app/expenses/<%= e.id %>/void" class="row"><input type="hidden" name="_csrf" value="<%= csrf %>"><input name="reason" placeholder="Reason" required style="width:110px"><button class="btn danger sm" data-confirm="Void this expense?">Void</button></form><% } %></td></tr><% }) %>
+  <% if (!list.rows.length) { %><tr><td colspan="8" class="empty">No expenses recorded.</td></tr><% } %></tbody></table></div>
+<%- include('../partials/pager', { list }) %>

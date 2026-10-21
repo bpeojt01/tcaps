@@ -1,0 +1,23 @@
+<form class="filters" method="get"><div><label>Date</label><input type="date" name="day" value="<%= day %>" max="<%= U.today() %>"></div>
+  <div class="btnrow"><button class="btn">Show</button><a class="btn ghost" href="/app/attendance-monitor?day=<%= day %>&export=csv">Export CSV</a><a class="btn ghost" href="/app/attendance-report">Monthly reports →</a></div></form>
+<p class="muted small">Live view as of <%= nowStr.slice(11, 16) %> (Asia/Manila). Absences are only flagged after the employee's shift end.</p>
+<div class="tw"><table><thead><tr><th>Employee</th><th>Schedule</th><th>Status</th><th>Time in</th><th>Time out</th><th class="num">Late (min)</th><th class="num">Hours</th><th>Correct record</th></tr></thead><tbody>
+  <% rows.forEach(function (r) { const d = r.d, u = r.u; const cls = { Present: 'b-ok', Late: 'b-warn', Absent: 'b-err', Incomplete: 'b-err', 'Clocked in': 'b-info', 'Approved leave': 'b-info' }[d.status] || ''; %>
+  <tr><td><%= u.name %><div class="small muted"><%= u.emp_no %></div></td><td class="nowrap"><%= u.sched_start %>–<%= u.sched_end %> (+<%= u.grace_min %>)</td><td><span class="badge <%= cls %>"><%= d.status %></span></td>
+    <td><%= d.rec && d.rec.time_in ? d.rec.time_in.slice(11, 16) : '—' %></td><td><%= d.rec && d.rec.time_out ? d.rec.time_out.slice(11, 16) : '—' %></td><td class="num"><%= d.late_min || '' %></td><td class="num"><%= d.mins ? U.hrs(d.mins) : '' %></td>
+    <td><form method="post" action="/app/attendance/correct" class="row"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="user_id" value="<%= u.id %>"><input type="hidden" name="day" value="<%= day %>">
+      <input type="time" name="time_in" value="<%= d.rec && d.rec.time_in ? d.rec.time_in.slice(11, 16) : '' %>" required style="width:105px"><input type="time" name="time_out" value="<%= d.rec && d.rec.time_out ? d.rec.time_out.slice(11, 16) : '' %>" style="width:105px">
+      <input name="reason" placeholder="Reason (required)" required maxlength="500" style="width:150px"><button class="btn ghost sm">Save</button></form></td></tr>
+  <% }) %></tbody></table></div>
+
+<div class="grid g2" style="margin-top:20px;align-items:start">
+  <form class="card" method="post" action="/app/attendance/leave"><h3>Record approved leave / holiday</h3><input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="grid g2"><div class="field"><label>Type</label><select name="kind"><option>Leave</option><option>Holiday</option></select></div>
+    <div class="field"><label>Date</label><input type="date" name="day" required></div></div>
+    <div class="field"><label>Employee (for leave)</label><select name="user_id"><option value="">— All (holiday) —</option><% staff.forEach(function (s) { %><option value="<%= s.id %>"><%= s.name %></option><% }) %></select></div>
+    <div class="field"><label>Note</label><input name="note" maxlength="200"></div><button class="btn">Save</button></form>
+  <div class="card"><h3>Recent &amp; upcoming leaves / holidays</h3><ul class="timeline">
+    <% leaves.forEach(function (l) { %><li><%= l.day %> · <strong><%= l.kind %></strong> · <%= l.name || 'Everyone' %> <span class="muted small"><%= l.note %></span>
+      <form method="post" action="/app/attendance/leave/<%= l.id %>/delete" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn ghost sm" data-confirm="Remove this entry?">Remove</button></form></li><% }) %>
+    <% if (!leaves.length) { %><li class="muted small">None recorded.</li><% } %></ul></div>
+</div>

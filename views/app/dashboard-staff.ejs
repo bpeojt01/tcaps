@@ -1,0 +1,18 @@
+<%- include('../partials/clockcard', { me, rec, mins }) %>
+<div class="stats">
+  <a class="stat" href="/app/requests?status=Pending+Review" style="text-decoration:none;color:inherit"><div class="n"><%= counts.pending %></div><div class="l">Pending requests</div></a>
+  <a class="stat" href="/app/requests?status=open" style="text-decoration:none;color:inherit"><div class="n"><%= counts.open_requests %></div><div class="l">Open requests</div></a>
+  <a class="stat" href="/app/bookings?status=Confirmed" style="text-decoration:none;color:inherit"><div class="n"><%= counts.confirmed %></div><div class="l">Confirmed bookings</div></a>
+  <a class="stat" href="/app/customers" style="text-decoration:none;color:inherit"><div class="n"><%= counts.customers %></div><div class="l">Customers</div></a>
+</div>
+<div class="grid g2">
+  <div class="card"><h3>New requests awaiting review</h3>
+    <% if (!newest.length) { %><p class="muted">Nothing pending. 🎉</p><% } %>
+    <ul class="timeline"><% newest.forEach(function (r) { %><li><a href="/app/requests/<%= r.id %>"><%= r.ref %></a> · <%= r.customer %><div class="small muted"><%= r.service_type %> · <%= r.created_at.slice(0, 16) %></div></li><% }) %></ul>
+  </div>
+  <div class="card"><h3>My open requests</h3>
+    <% if (!mine.length) { %><p class="muted">No open requests assigned to you.</p><% } %>
+    <ul class="timeline"><% mine.forEach(function (r) { %><li><a href="/app/requests/<%= r.id %>"><%= r.ref %></a> · <%= r.customer %> <span class="badge"><%= r.status %></span></li><% }) %></ul>
+  </div>
+</div>
+<div class="row"><a class="btn" href="/app/requests/new">Register a walk-in / phone request</a> <a class="btn ghost" href="/app/customers/new">New customer</a> <a class="btn ghost" href="/app/bookings/new">New booking</a></div>

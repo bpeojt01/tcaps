@@ -1,0 +1,20 @@
+<div class="grid g2" style="align-items:start">
+  <div class="card"><div class="row spread"><h2><%= c.name %> <span class="muted small"><%= c.code %></span></h2><a class="btn ghost sm" href="/app/customers/<%= c.id %>/edit">Edit</a></div>
+    <dl class="kv"><dt>Phone</dt><dd><%= c.phone || '—' %></dd><dt>Email</dt><dd><%= c.email || '—' %></dd><dt>Preferred</dt><dd><%= c.pref_contact || '—' %></dd><dt>Registered</dt><dd><%= c.created_at.slice(0, 16) %></dd>
+    <dt>Outstanding</dt><dd><strong><%= U.peso(c.balance) %></strong></dd></dl>
+    <% if (c.notes) { %><p class="small muted" style="white-space:pre-line"><%= c.notes %></p><% } %>
+    <div class="row"><a class="btn sm" href="/app/requests/new?customer=<%= c.id %>">New request</a><a class="btn sm alt" href="/app/bookings/new?customer=<%= c.id %>">New booking</a></div></div>
+  <%- include('../partials/notes', { entity: 'customer', id: c.id, notes }) %>
+</div>
+<h2>Bookings</h2>
+<div class="tw"><table><thead><tr><th>Ref</th><th>Service</th><th>Status</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Balance</th></tr></thead><tbody>
+  <% bookings.forEach(function (b) { %><tr><td><a href="/app/bookings/<%= b.id %>"><%= b.ref %></a></td><td><%= b.service_type %></td><td><span class="badge"><%= b.status %></span></td><td class="num"><%= U.peso(b.total) %></td><td class="num"><%= U.peso(b.paid) %></td><td class="num"><%= U.peso(b.balance) %></td></tr><% }) %>
+  <% if (!bookings.length) { %><tr><td colspan="6" class="empty">No bookings yet.</td></tr><% } %></tbody></table></div>
+<h2 style="margin-top:22px">Travel requests</h2>
+<div class="tw"><table><thead><tr><th>Ref</th><th>Service</th><th>Status</th><th>Received</th></tr></thead><tbody>
+  <% requests.forEach(function (r) { %><tr><td><a href="/app/requests/<%= r.id %>"><%= r.ref %></a></td><td><%= r.service_type %></td><td><span class="badge"><%= r.status %></span></td><td><%= r.created_at.slice(0, 16) %></td></tr><% }) %>
+  <% if (!requests.length) { %><tr><td colspan="4" class="empty">No requests yet.</td></tr><% } %></tbody></table></div>
+<h2 style="margin-top:22px">Payment history</h2>
+<div class="tw"><table><thead><tr><th>ID</th><th>Date</th><th>Booking</th><th>Type</th><th>Method</th><th class="num">Amount</th></tr></thead><tbody>
+  <% payments.forEach(function (p) { %><tr class="<%= p.status === 'Reversed' ? 'off' : '' %>"><td><%= p.ref %></td><td><%= p.paid_at %></td><td><%= p.booking_ref %></td><td><%= p.kind %><%= p.status === 'Reversed' ? ' (reversed)' : '' %></td><td><%= p.method %></td><td class="num"><%= p.kind === 'Refund' ? '−' : '' %><%= U.peso(p.amount) %></td></tr><% }) %>
+  <% if (!payments.length) { %><tr><td colspan="6" class="empty">No payments yet.</td></tr><% } %></tbody></table></div>

@@ -1,0 +1,7 @@
+<% if (list.pages > 1) { %>
+<nav class="pager" aria-label="Pagination">
+  <% if (list.page > 1) { %><a class="btn ghost sm" href="?<%= list.qs %>&page=<%= list.page - 1 %>">← Prev</a><% } %>
+  <span class="cur">Page <%= list.page %> of <%= list.pages %> · <%= list.total %> records</span>
+  <% if (list.page < list.pages) { %><a class="btn ghost sm" href="?<%= list.qs %>&page=<%= list.page + 1 %>">Next →</a><% } %>
+</nav>
+<% } else { %><p class="muted small right"><%= list.total %> record<%= list.total === 1 ? '' : 's' %></p><% } %>

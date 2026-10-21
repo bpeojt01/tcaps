@@ -1,0 +1,52 @@
+<%
+const q = (o) => new URLSearchParams(o).toString();
+const rng = 'from=' + per.from + '&to=' + per.to;
+const card = (n, l, cls, href) => `<${href ? 'a href="' + href + '"' : 'div'} class="stat ${cls || ''}" style="text-decoration:none;color:inherit"><div class="n">${n}</div><div class="l">${l}</div></${href ? 'a' : 'div'}>`;
+%>
+<form class="card filters" method="get" data-noload>
+  <div><label for="per">Period</label><select id="per" name="period" data-auto>
+    <% [['day', 'Day'], ['month', 'This month'], ['quarter', 'This quarter'], ['year', 'This year'], ['custom', 'Custom range']].forEach(function (p) { %><option value="<%= p[0] %>" <%= per.key === p[0] ? 'selected' : '' %>><%= p[1] %></option><% }) %></select></div>
+  <div><label for="from">From</label><input id="from" type="date" name="from" value="<%= per.from %>"></div>
+  <div><label for="to">To</label><input id="to" type="date" name="to" value="<%= per.to %>"></div>
+  <div class="btnrow"><button class="btn">Apply</button></div>
+  <div class="muted small grow">Showing <%= per.from %> to <%= per.to %>. Pick "Custom range" to use the dates.</div>
+</form>
+
+<h2>Business performance</h2>
+<div class="stats">
+  <%- card(counts.customers, 'Total customers', '', '/app/customers') %>
+  <%- card(newInq, 'New inquiries (period)', '', '/app/requests?' + rng) %>
+  <%- card(counts.pending, 'Pending requests', '', '/app/requests?status=Pending+Review') %>
+  <%- card(counts.confirmed, 'Confirmed bookings', '', '/app/bookings?status=Confirmed') %>
+  <%- card(counts.completed, 'Completed bookings', '', '/app/bookings?status=Completed') %>
+  <%- card(U.peso(f.booking_sales), 'Total booking sales', '', '/app/bookings?' + rng) %>
+  <%- card(U.peso(f.collected), 'Payments collected (net of refunds)', '', '/app/payments?' + rng) %>
+  <%- card(U.peso(f.outstanding), 'Outstanding balances (all time)', f.outstanding ? 'neg' : '', '/app/customers?owing=1') %>
+  <%- card(U.peso(f.supplier_costs), 'Supplier costs (confirmed)', '', '/app/finance?' + rng) %>
+  <%- card(U.peso(f.expenses), 'Operating expenses', '', '/app/expenses?' + rng) %>
+  <%- card(U.peso(f.net), 'Estimated net operating result', f.net >= 0 ? 'pos' : 'neg', '/app/finance?' + rng) %>
+  <%- card(counts.messages, 'Unhandled contact messages', '', '/app/settings') %>
+</div>
+
+<h2>Employee monitoring <span class="muted small">(today)</span></h2>
+<div class="stats">
+  <%- card(emp.active, 'Active employees', '', '/app/employees') %>
+  <%- card(emp.timedIn, 'Recorded time-in today', '', '/app/attendance-monitor') %>
+  <%- card(emp.clockedIn, 'Currently clocked in', '', '/app/attendance-monitor') %>
+  <%- card(emp.late, 'Marked late today', emp.late ? 'neg' : '', '/app/attendance-monitor') %>
+  <%- card(emp.absent, 'Absent today (after shift end)', emp.absent ? 'neg' : '', '/app/attendance-monitor') %>
+  <%- card(emp.incomplete, 'Incomplete records (period)', emp.incomplete ? 'neg' : '', '/app/attendance-report') %>
+</div>
+
+<div class="charts">
+  <div class="card"><h3>Monthly booking sales &amp; collections</h3><div class="chart"><canvas id="c-sales"></canvas></div></div>
+  <div class="card"><h3>Monthly expenses &amp; net operating result</h3><div class="chart"><canvas id="c-net"></canvas></div></div>
+  <div class="card"><h3>Bookings by service type</h3><div class="chart"><canvas id="c-svc"></canvas></div></div>
+  <div class="card"><h3>Booking status distribution</h3><div class="chart"><canvas id="c-status"></canvas></div></div>
+  <div class="card"><h3>Customer inquiry trend</h3><div class="chart"><canvas id="c-inq"></canvas></div></div>
+  <div class="card"><h3>Monthly attendance records</h3><div class="chart"><canvas id="c-att"></canvas></div></div>
+  <div class="card" style="grid-column:1/-1"><h3>Late arrivals &amp; absences by employee (period)</h3><div class="chart"><canvas id="c-emp"></canvas></div></div>
+</div>
+<script type="application/json" id="chart-data"><%- chartJson %></script>
+
+<%- include('../partials/clockcard', { me, rec, mins }) %>

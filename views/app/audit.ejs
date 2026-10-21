@@ -1,0 +1,11 @@
+<% const qv = new URLSearchParams(list.qs); const g = (k) => qv.get(k) || ''; %>
+<form class="card filters" method="get">
+  <div class="grow"><label>Search</label><input name="q" value="<%= g('q') %>" placeholder="Action, user, detail, record ID"></div>
+  <div><label>Entity</label><select name="entity"><option value="">All</option><% entities.forEach(function (e) { %><option <%= g('entity') === e ? 'selected' : '' %>><%= e %></option><% }) %></select></div>
+  <div><label>From</label><input type="date" name="from" value="<%= g('from') %>"></div><div><label>To</label><input type="date" name="to" value="<%= g('to') %>"></div>
+  <div class="btnrow"><button class="btn">Filter</button><a class="btn ghost" href="/app/audit?<%= list.qs %>&export=csv">Export CSV</a></div>
+</form>
+<div class="tw"><table><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Entity</th><th>Detail</th><th>IP</th></tr></thead><tbody>
+  <% list.rows.forEach(function (r) { %><tr><td class="nowrap"><%= r.at %></td><td><%= r.username || '—' %></td><td><%= r.action %></td><td><%= r.entity %> <%= r.entity_id %></td><td class="small" style="max-width:420px;overflow-wrap:anywhere"><%= r.detail %></td><td><%= r.ip %></td></tr><% }) %>
+  <% if (!list.rows.length) { %><tr><td colspan="6" class="empty">No log entries.</td></tr><% } %></tbody></table></div>
+<%- include('../partials/pager', { list }) %>

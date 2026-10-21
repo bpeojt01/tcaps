@@ -1,0 +1,25 @@
+<% const long = ['about', 'privacy', 'mission', 'vision', 'fares', 'why', 'fares_note', 'partners'];
+const hints = { fares: 'One fare per line: Route|Amount, e.g. Manila to Palawan|2714', why: 'One point per line: Title|Description', partners: 'Comma-separated list', facebook: 'Full page link starting with https:// (shows as a clickable link)' }; %>
+<form class="card" method="post" action="/app/settings" style="max-width:820px">
+  <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="mode" value="<%= mode %>">
+  <h3><%= mode === 'content' ? 'Business details & website text' : 'Settings' %></h3>
+  <% keys.forEach(function (k) { %>
+    <div class="field"><label for="k-<%= k %>"><%= k.replace(/_/g, ' ').replace(/^./, function (c) { return c.toUpperCase(); }) %></label>
+      <% if (long.includes(k)) { %><textarea id="k-<%= k %>" name="<%= k %>" rows="<%= ['privacy', 'about', 'fares', 'why'].includes(k) ? 8 : 2 %>"><%= S[k] %></textarea>
+      <% } else { %><input id="k-<%= k %>" name="<%= k %>" value="<%= S[k] %>" maxlength="400"><% } %>
+      <% if (hints[k]) { %><div class="small muted"><%= hints[k] %></div><% } %></div>
+  <% }) %>
+  <button class="btn">Save</button>
+</form>
+<% if (mode === 'system') { %>
+<div class="grid g2" style="align-items:start">
+  <div class="card"><h3>Backups &amp; recovery</h3>
+    <p class="small muted">A backup is created automatically at every server start and once a day (last 30 kept in <code>data/backups</code>). Uploaded files live in <code>data/uploads</code> — copy that folder too. To restore: stop the server, replace <code>data/travel.db</code> with a backup file, and start again.</p>
+    <form method="post" action="/app/settings/backup"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn sm">Create backup now</button></form>
+    <ul class="timeline"><% backups.forEach(function (b) { %><li><a href="/app/settings/backup/<%= encodeURIComponent(b) %>"><%= b %></a></li><% }) %></ul></div>
+  <div class="card"><h3>Contact messages</h3><ul class="timeline">
+    <% messages.forEach(function (m) { %><li class="<%= m.handled ? 'muted' : '' %>"><strong><%= m.name %></strong> · <%= m.email %> <%= m.phone %><div style="white-space:pre-line"><%= m.body %></div><div class="small muted"><%= m.at.slice(0, 16) %></div>
+      <% if (!m.handled) { %><form method="post" action="/app/messages/<%= m.id %>/handled"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn ghost sm">Mark handled</button></form><% } %></li><% }) %>
+    <% if (!messages.length) { %><li class="muted small">No messages.</li><% } %></ul></div>
+</div>
+<% } %>

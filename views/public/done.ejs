@@ -1,0 +1,9 @@
+<section class="section"><div class="wrap"><div class="formbox card" style="text-align:center">
+  <h1>Request received</h1>
+  <p>Thank you! Your travel assistance request has been submitted with the status <strong>Pending Review</strong>.</p>
+  <div class="ref" aria-label="Reference number"><%= ref %></div>
+  <p>Please keep this reference number and quote it when you contact us for updates.</p>
+  <div class="notice">This is not a ticket, hotel reservation or payment confirmation. Our staff will contact you with options and a quotation.</div>
+  <p style="margin-top:18px"><%= [S.phones, S.email].filter(Boolean).join(' · ') %><br><span class="muted small"><%= S.hours %></span></p>
+  <a class="btn" href="/">Back to home</a>
+</div></div></section>

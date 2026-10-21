@@ -1,0 +1,43 @@
+<form class="card filters noprint" method="get">
+  <div><label>Period</label><select name="period" data-auto><% [['day', 'Day'], ['month', 'This month'], ['quarter', 'This quarter'], ['year', 'This year'], ['custom', 'Custom range']].forEach(function (p) { %><option value="<%= p[0] %>" <%= per.key === p[0] ? 'selected' : '' %>><%= p[1] %></option><% }) %></select></div>
+  <div><label>From</label><input type="date" name="from" value="<%= per.from %>"></div><div><label>To</label><input type="date" name="to" value="<%= per.to %>"></div>
+  <div class="btnrow"><button class="btn">Apply</button><a class="btn ghost" href="?period=<%= per.key %>&from=<%= per.from %>&to=<%= per.to %>&export=csv">Export CSV</a><button type="button" class="btn ghost" data-print>PDF / Print</button></div>
+</form>
+<p class="muted">Period: <strong><%= per.from %></strong> to <strong><%= per.to %></strong> · Currency: PHP · Time zone: Asia/Manila</p>
+
+<div class="stats">
+  <div class="stat"><div class="n"><%= U.peso(f.booking_sales) %></div><div class="l">Total booking sales (quoted + confirmed + completed)</div></div>
+  <div class="stat"><div class="n"><%= U.peso(f.confirmed) %></div><div class="l">Confirmed booking value (<%= f.n_confirmed + f.n_completed %> bookings)</div></div>
+  <div class="stat"><div class="n"><%= U.peso(f.collected) %></div><div class="l">Payments collected (net of refunds)</div></div>
+  <div class="stat"><div class="n"><%= U.peso(f.supplier_costs) %></div><div class="l">Supplier costs</div></div>
+  <div class="stat"><div class="n"><%= U.peso(f.fees) %></div><div class="l">Service fees &amp; commissions</div></div>
+  <div class="stat"><div class="n"><%= U.peso(f.expenses) %></div><div class="l">Business expenses</div></div>
+  <div class="stat <%= f.outstanding ? 'neg' : '' %>"><div class="n"><%= U.peso(f.outstanding) %></div><div class="l">Outstanding customer balances (as of today)</div></div>
+  <div class="stat <%= f.grossMargin >= 0 ? 'pos' : 'neg' %>"><div class="n"><%= U.peso(f.grossMargin) %></div><div class="l">Estimated gross booking margin</div></div>
+  <div class="stat <%= f.net >= 0 ? 'pos' : 'neg' %>"><div class="n"><%= U.peso(f.net) %></div><div class="l">Estimated net operating result</div></div>
+</div>
+
+<div class="grid g2" style="align-items:start">
+  <div class="card"><h3>Sales breakdown by booking status</h3><dl class="kv">
+    <dt>Quoted (not yet confirmed)</dt><dd><%= U.peso(f.quoted) %></dd><dt>Confirmed + completed</dt><dd><%= U.peso(f.confirmed) %></dd><dt>of which Completed</dt><dd><%= U.peso(f.completed) %></dd><dt>Cancelled (excluded)</dt><dd><%= U.peso(f.cancelled) %></dd></dl></div>
+  <div class="card"><h3>Collections</h3><dl class="kv"><dt>Payments received</dt><dd><%= U.peso(f.received) %></dd><dt>Refunds paid</dt><dd>−<%= U.peso(f.refunds) %></dd><dt>Net collected</dt><dd><strong><%= U.peso(f.collected) %></strong></dd></dl>
+    <p class="small muted">Money collected is not profit: a ₱15,000 payment for a ₱14,000 ticket yields ₱1,000 gross margin before expenses.</p></div>
+</div>
+<h3>By service (confirmed + completed)</h3>
+<div class="tw"><table><thead><tr><th>Service</th><th class="num">Bookings</th><th class="num">Sales</th><th class="num">Supplier cost</th><th class="num">Margin</th></tr></thead><tbody>
+  <% byService.forEach(function (s) { %><tr><td><%= s.k %></td><td class="num"><%= s.n %></td><td class="num"><%= U.peso(s.sales) %></td><td class="num"><%= U.peso(s.cost) %></td><td class="num"><%= U.peso(s.sales - s.cost) %></td></tr><% }) %>
+  <% if (!byService.length) { %><tr><td colspan="5" class="empty">No confirmed bookings in this period.</td></tr><% } %></tbody></table></div>
+<h3 style="margin-top:20px">Expenses by category</h3>
+<div class="tw"><table><thead><tr><th>Category</th><th class="num">Total</th></tr></thead><tbody>
+  <% expCat.forEach(function (s) { %><tr><td><%= s.k %></td><td class="num"><%= U.peso(s.total) %></td></tr><% }) %><% if (!expCat.length) { %><tr><td colspan="2" class="empty">No expenses in this period.</td></tr><% } %></tbody></table></div>
+<h3 style="margin-top:20px">Largest outstanding balances</h3>
+<div class="tw"><table><thead><tr><th>Booking</th><th>Customer</th><th>Status</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Balance</th></tr></thead><tbody>
+  <% owing.forEach(function (b) { %><tr><td><a href="/app/bookings/<%= b.id %>"><%= b.ref %></a></td><td><%= b.customer %></td><td><%= b.status %></td><td class="num"><%= U.peso(b.total) %></td><td class="num"><%= U.peso(b.paid) %></td><td class="num"><%= U.peso(b.balance) %></td></tr><% }) %>
+  <% if (!owing.length) { %><tr><td colspan="6" class="empty">Nothing outstanding.</td></tr><% } %></tbody></table></div>
+
+<div class="card" style="margin-top:20px"><h3>Accounting assumptions</h3><ul class="small">
+  <li>Booking sales are by booking creation date; cancelled bookings are excluded from sales, margin and balances.</li>
+  <li>Confirmed value = bookings with status Confirmed or Completed. Supplier costs, fees and margin are recognised only on confirmed value.</li>
+  <li>Collections are on a cash basis by payment date: valid payments minus valid refunds. Reversed records are ignored.</li>
+  <li>Gross booking margin = confirmed value − supplier costs. Net operating result = gross margin − valid business expenses (voided expenses excluded).</li>
+  <li>Outstanding balance = total payable − net payments on Confirmed/Completed bookings, regardless of the period filter.</li></ul></div>

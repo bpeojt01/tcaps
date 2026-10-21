@@ -1,0 +1,25 @@
+<form class="card" method="post" style="max-width:760px" novalidate autocomplete="off">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <h3>Account</h3>
+  <div class="grid g2">
+    <%- include('../partials/field', { name: 'name', label: 'Full name *', v: e, errors, attrs: 'required maxlength="120"' }) %>
+    <%- include('../partials/field', { name: 'email', label: 'Email', type: 'email', v: e, errors }) %>
+    <%- include('../partials/field', { name: 'username', label: 'Username *', v: e, errors, attrs: 'required maxlength="40"' }) %>
+    <%- include('../partials/field', { name: 'password', label: isNew ? 'Initial password *' : 'Reset password (leave blank to keep)', type: 'password', v: {}, errors, attrs: 'autocomplete="new-password" minlength="10"', hint: 'Min 10 characters with letters and numbers. The employee must change it at first login.' }) %>
+    <%- include('../partials/field', { name: 'role', label: 'Role', type: 'select', options: [['employee', 'Employee'], ['owner', 'Owner / Administrator']], v: e, errors }) %>
+    <div class="field"><label>Permissions</label>
+      <label style="font-weight:400"><input type="checkbox" name="can_expenses" <%= e.can_expenses ? 'checked' : '' %>> Can record/view business expenses</label>
+      <label style="font-weight:400"><input type="checkbox" name="active" <%= e.active ? 'checked' : '' %>> Account active</label></div>
+  </div>
+  <h3>Work schedule &amp; attendance rules</h3>
+  <div class="grid g4">
+    <%- include('../partials/field', { name: 'sched_start', label: 'Shift start', type: 'time', v: e, errors }) %>
+    <%- include('../partials/field', { name: 'sched_end', label: 'Shift end', type: 'time', v: e, errors }) %>
+    <%- include('../partials/field', { name: 'grace_min', label: 'Grace period (min)', type: 'number', v: e, errors, attrs: 'min="0" max="120"' }) %>
+    <%- include('../partials/field', { name: 'break_min', label: 'Unpaid break (min)', type: 'number', v: e, errors, attrs: 'min="0" max="240"' }) %>
+  </div>
+  <div class="field"><label>Workdays</label><div class="row">
+    <% DAYS.forEach(function (d, i) { %><label style="font-weight:400"><input type="checkbox" name="workdays" value="<%= i %>" <%= String(e.workdays || '').split(',').includes(String(i)) ? 'checked' : '' %>> <%= d %></label><% }) %></div></div>
+  <p class="small muted">Late = time-in after shift start + grace period. Absent = scheduled workday ended with no attendance, leave or holiday. Changes apply to future calculations of the displayed reports.</p>
+  <button class="btn">Save</button> <a class="btn ghost" href="/app/employees">Cancel</a>
+</form>

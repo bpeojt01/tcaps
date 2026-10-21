@@ -1,0 +1,13 @@
+<section class="section"><div class="wrap" style="max-width:820px">
+  <h1>About Us</h1>
+  <p><%= S.about %></p>
+  <div class="grid g2" style="margin:24px 0">
+    <div class="card"><h3>Our mission</h3><p><%= S.mission %></p></div>
+    <div class="card"><h3>Our vision</h3><p><%= S.vision %></p></div>
+  </div>
+  <div class="card"><h3>Our values</h3>
+    <p><% S.values.split(',').forEach(function (v) { %><span class="badge b-info" style="margin-right:6px"><%= v.trim() %></span><% }) %></p></div>
+  <div class="card"><h3>How it works</h3>
+    <ol><li>Send us your travel requirements online, by phone, or in person.</li><li>We coordinate with airlines, hotels and suppliers and send you a quotation.</li><li>You confirm and pay (deposits are possible).</li><li>We process your booking and send your confirmation.</li></ol></div>
+  <a class="btn alt" href="/request">Request Travel Assistance</a>
+</div></section>

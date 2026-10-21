@@ -1,0 +1,9 @@
+<div class="wrap"><form class="narrow card" method="post" action="/login">
+  <h1>Staff login</h1>
+  <% if (error) { %><div class="flash err" role="alert"><%= error %></div><% } %>
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <div class="field"><label for="u">Username</label><input id="u" name="username" autocomplete="username" required autofocus></div>
+  <div class="field"><label for="p">Password</label><input id="p" type="password" name="password" autocomplete="current-password" required></div>
+  <button class="btn" style="width:100%">Log in</button>
+  <p class="small muted">Authorized personnel only. Activity is logged.</p>
+</form></div>

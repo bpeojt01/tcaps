@@ -1,0 +1,11 @@
+<form class="card" method="post" style="max-width:640px">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <%- include('../partials/field', { name: 'name', label: 'Full name *', v: c, errors, attrs: 'required maxlength="120"' }) %>
+  <div class="grid g2">
+    <%- include('../partials/field', { name: 'phone', label: 'Contact number', v: c, errors, attrs: 'maxlength="40"' }) %>
+    <%- include('../partials/field', { name: 'email', label: 'Email', type: 'email', v: c, errors, attrs: 'maxlength="160"' }) %>
+  </div>
+  <%- include('../partials/field', { name: 'pref_contact', label: 'Preferred contact method', type: 'select', options: ['Phone call', 'SMS', 'Email', 'Viber', 'Messenger', 'WhatsApp'], v: c, errors }) %>
+  <%- include('../partials/field', { name: 'notes', label: 'Notes', type: 'textarea', v: c, errors }) %>
+  <button class="btn">Save customer</button> <a class="btn ghost" href="<%= c.id ? '/app/customers/' + c.id : '/app/customers' %>">Cancel</a>
+</form>

@@ -1,0 +1,26 @@
+<div class="grid g2" style="align-items:start">
+  <div>
+    <div class="card"><h2><%= r.ref %> <span class="badge b-info"><%= r.status %></span></h2>
+      <dl class="kv">
+        <dt>Customer</dt><dd><a href="/app/customers/<%= r.customer_id %>"><%= r.customer %></a> (<%= r.customer_code %>)</dd>
+        <dt>Phone</dt><dd><%= r.phone || '—' %></dd><dt>Email</dt><dd><%= r.email || '—' %></dd>
+        <dt>Service</dt><dd><%= r.service_type %></dd><dt>Source</dt><dd><%= r.source %></dd><dt>Received</dt><dd><%= r.created_at.slice(0, 16) %></dd><dt>Assigned to</dt><dd><%= r.employee || 'Unassigned' %></dd>
+      </dl></div>
+    <div class="card"><h3>Travel details</h3>
+      <dl class="kv"><% Object.entries(details).forEach(function (d) { if (d[0] === 'contact_phone') return; %><dt><%= d[0] === 'contact_method' ? 'Preferred contact' : (labels[d[0]] || d[0]) %></dt><dd style="white-space:pre-line"><%= d[1] %></dd><% }) %></dl>
+      <p><a class="btn alt sm" href="/app/bookings/new?request=<%= r.id %>">Create booking / quotation</a>
+      <% bookings.forEach(function (b) { %> <a class="btn ghost sm" href="/app/bookings/<%= b.id %>"><%= b.ref %> (<%= b.status %>)</a><% }) %></p></div>
+  </div>
+  <div>
+    <form class="card" method="post" action="/app/requests/<%= r.id %>/status">
+      <h3>Update status</h3><input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="field"><label for="st">Status</label><select id="st" name="status"><% B.STATUSES.forEach(function (s) { %><option <%= s === r.status ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+      <div class="field"><label for="as">Assign to</label><select id="as" name="assigned_to"><option value="">Keep current</option><% staff.forEach(function (s) { %><option value="<%= s.id %>"><%= s.name %></option><% }) %></select></div>
+      <div class="field"><label for="nt">Note on action taken</label><textarea id="nt" name="note" rows="2" maxlength="1000"></textarea></div>
+      <button class="btn">Save</button>
+    </form>
+    <div class="card"><h3>Status history</h3><ul class="timeline">
+      <% log.forEach(function (l) { %><li><strong><%= l.to_status %></strong><% if (l.from_status) { %> <span class="muted small">from <%= l.from_status %></span><% } %><% if (l.note) { %><div><%= l.note %></div><% } %><div class="small muted"><%= l.who || 'Customer / system' %> · <%= l.at.slice(0, 16) %></div></li><% }) %></ul></div>
+  </div>
+</div>
+<%- include('../partials/notes', { entity: 'request', id: r.id, notes }) %>

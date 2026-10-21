@@ -1,0 +1,22 @@
+<% const qv = new URLSearchParams(list.qs); const g = (k) => qv.get(k) || ''; %>
+<form class="card filters" method="get">
+  <div class="grow"><label for="q">Search</label><input id="q" name="q" value="<%= g('q') %>" placeholder="Payment ID, customer, booking, reference"></div>
+  <div><label>Type</label><select name="kind"><option value="">All</option><option <%= g('kind') === 'Payment' ? 'selected' : '' %>>Payment</option><option <%= g('kind') === 'Refund' ? 'selected' : '' %>>Refund</option></select></div>
+  <div><label>Record status</label><select name="pstatus"><option value="">All</option><option <%= g('pstatus') === 'Valid' ? 'selected' : '' %>>Valid</option><option <%= g('pstatus') === 'Reversed' ? 'selected' : '' %>>Reversed</option></select></div>
+  <div><label>Method</label><select name="method"><option value="">All</option><% B.METHODS.forEach(function (m) { %><option <%= g('method') === m ? 'selected' : '' %>><%= m %></option><% }) %></select></div>
+  <div><label>Recorded by</label><select name="employee"><option value="">Anyone</option><% staff.forEach(function (s) { %><option value="<%= s.id %>" <%= g('employee') === String(s.id) ? 'selected' : '' %>><%= s.name %></option><% }) %></select></div>
+  <div><label>From</label><input type="date" name="from" value="<%= g('from') %>"></div>
+  <div><label>To</label><input type="date" name="to" value="<%= g('to') %>"></div>
+  <div class="btnrow"><button class="btn">Filter</button><a class="btn ghost" href="/app/payments">Reset</a><a class="btn ghost" href="/app/payments?<%= list.qs %>&export=csv">Export CSV</a><button type="button" class="btn ghost" data-print>PDF / Print</button></div>
+</form>
+<p class="muted small">Payments are recorded from each booking page. Amounts shown are individual transactions; refunds are negative.</p>
+<div class="tw"><table>
+  <thead><tr><%- include('../partials/th', { list, label: 'ID', key: 'ref' }) %><%- include('../partials/th', { list, label: 'Date', key: 'date' }) %><th>Type</th><%- include('../partials/th', { list, label: 'Customer', key: 'customer' }) %><th>Booking</th><th>Method</th><th>Reference</th><%- include('../partials/th', { list, label: 'Amount', key: 'amount', cls: 'num' }) %><th>Recorded by</th></tr></thead>
+  <tbody>
+  <% list.rows.forEach(function (p) { %>
+    <tr class="<%= p.status === 'Reversed' ? 'off' : '' %>"><td><%= p.ref %></td><td class="nowrap"><%= p.paid_at %></td><td><%= p.kind %><%= p.status === 'Reversed' ? ' (reversed)' : '' %></td><td><a href="/app/customers/<%= p.customer_id %>"><%= p.customer %></a></td>
+    <td><a href="/app/bookings/<%= p.booking_id %>"><%= p.booking_ref %></a></td><td><%= p.method %></td><td><%= p.reference %></td><td class="num"><%= p.kind === 'Refund' ? '−' : '' %><%= U.peso(p.amount) %></td><td><%= p.recorder %></td></tr>
+  <% }) %>
+  <% if (!list.rows.length) { %><tr><td colspan="9" class="empty">No transactions found.</td></tr><% } %>
+  </tbody></table></div>
+<%- include('../partials/pager', { list }) %>

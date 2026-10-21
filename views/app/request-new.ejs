@@ -1,0 +1,18 @@
+<form class="card" method="post" style="max-width:780px" novalidate>
+  <p class="muted">Register a request received by walk-in, phone, email or social media. <a href="/app/customers/new">Create the customer first</a> if they are new.</p>
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <div class="grid g2">
+    <%- include('../partials/field', { name: 'customer_id', label: 'Customer *', type: 'select', options: customers.map(function (c) { return [c.id, c.code + ' — ' + c.name]; }), v, errors }) %>
+    <%- include('../partials/field', { name: 'source', label: 'Channel *', type: 'select', options: ['Walk-in', 'Phone call', 'Email', 'Social media'], v, errors }) %>
+  </div>
+  <%- include('../partials/field', { name: 'service_type', label: 'Service *', type: 'select', options: B.SERVICE_TYPES, v, errors }) %>
+  <% Object.entries(forms.GROUPS).forEach(function (g) { %>
+    <div data-types="<%= g[1].types.join('|') %>" hidden><div class="grid g2">
+    <% g[1].fields.forEach(function (f) { const w = f.when ? ' data-when-trip="' + f.when + '"' : ''; const attrs = (f.min != null ? 'min="' + f.min + '" ' : '') + 'disabled'; %>
+      <div <%- w %> <%- f.type === 'textarea' ? 'style="grid-column:1/-1"' : '' %>>
+        <%- include('../partials/field', { name: 'd_' + f.k, label: f.label + (f.required ? ' *' : ''), type: f.type, options: f.options || [], v, errors: Object.fromEntries(Object.entries(errors).map(function (x) { return ['d_' + x[0], x[1]]; })), attrs }) %>
+      </div>
+    <% }) %></div></div>
+  <% }) %>
+  <button class="btn">Register request</button> <a class="btn ghost" href="/app/requests">Cancel</a>
+</form>

@@ -1,0 +1,19 @@
+<%# locals: name, label, v (values obj), errors, type, options, attrs, hint %>
+<% const t = typeof type === 'undefined' ? 'text' : type; const val = (v && v[name] != null) ? v[name] : ''; const e = errors && errors[name]; %>
+<div class="field <%= e ? 'has-err' : '' %>">
+  <label for="f-<%= name %>"><%= label %></label>
+  <% if (t === 'select') { %>
+    <select id="f-<%= name %>" name="<%= name %>" <%- typeof attrs === 'string' ? attrs : '' %>>
+      <option value="">— Select —</option>
+      <% options.forEach(function (o) { const ov = Array.isArray(o) ? o[0] : o, ol = Array.isArray(o) ? o[1] : o; %>
+        <option value="<%= ov %>" <%= String(val) === String(ov) ? 'selected' : '' %>><%= ol %></option>
+      <% }) %>
+    </select>
+  <% } else if (t === 'textarea') { %>
+    <textarea id="f-<%= name %>" name="<%= name %>" <%- typeof attrs === 'string' ? attrs : '' %>><%= val %></textarea>
+  <% } else { %>
+    <input id="f-<%= name %>" type="<%= t %>" name="<%= name %>" value="<%= val %>" <%- typeof attrs === 'string' ? attrs : '' %>>
+  <% } %>
+  <% if (typeof hint !== 'undefined' && hint) { %><div class="small muted"><%= hint %></div><% } %>
+  <% if (e) { %><div class="err" role="alert"><%= e %></div><% } %>
+</div>

@@ -1,0 +1,21 @@
+<%- include('../partials/clockcard', { me, rec, mins: todayMins }) %>
+<div class="card small muted">Your schedule: <%= sched.start %>–<%= sched.end %> · grace period <%= sched.grace %> min · unpaid break <%= sched.brk %> min · workdays <%= sched.days.map(function (d) { return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]; }).join(', ') %>. Times are recorded by the server in Asia/Manila time.</div>
+
+<form class="filters" method="get"><div><label for="m">Month</label><input id="m" type="month" name="month" value="<%= ym %>"></div><div class="btnrow"><button class="btn ghost">Show</button></div></form>
+<div class="stats">
+  <div class="stat"><div class="n"><%= sum.days %></div><div class="l">Days attended</div></div>
+  <div class="stat"><div class="n"><%= sum.late %></div><div class="l">Late arrivals</div></div>
+  <div class="stat"><div class="n"><%= sum.absent %></div><div class="l">Absences</div></div>
+  <div class="stat"><div class="n"><%= sum.incomplete %></div><div class="l">Incomplete</div></div>
+  <div class="stat"><div class="n"><%= U.hrs(sum.mins) %></div><div class="l">Total hours</div></div>
+</div>
+<div class="tw"><table>
+  <thead><tr><th>Date</th><th>Status</th><th>Time in</th><th>Time out</th><th class="num">Hours</th></tr></thead>
+  <tbody>
+  <% rows.forEach(function (r) { const cls = { Present: 'b-ok', Late: 'b-warn', Absent: 'b-err', Incomplete: 'b-err', 'Clocked in': 'b-info', 'Approved leave': 'b-info' }[r.status] || ''; %>
+    <tr><td class="nowrap"><%= r.day %> <span class="muted small"><%= ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][U.dow(r.day)] %></span></td>
+    <td><span class="badge <%= cls %>"><%= r.status %></span><% if (r.late && r.late_min) { %> <span class="small muted">+<%= r.late_min %> min</span><% } %></td>
+    <td><%= r.rec && r.rec.time_in ? r.rec.time_in.slice(11, 16) : '—' %></td><td><%= r.rec && r.rec.time_out ? r.rec.time_out.slice(11, 16) : '—' %></td><td class="num"><%= r.mins ? U.hrs(r.mins) : '—' %></td></tr>
+  <% }) %>
+  <% if (!rows.length) { %><tr><td colspan="5" class="empty">No records for this month.</td></tr><% } %>
+  </tbody></table></div>

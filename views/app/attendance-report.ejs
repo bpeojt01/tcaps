@@ -1,0 +1,27 @@
+<form class="card filters noprint" method="get">
+  <div><label>Month</label><input type="month" name="month" value="<%= ym %>"></div>
+  <div><label>Employee</label><select name="employee"><option value="">All employees</option><% all.forEach(function (u) { %><option value="<%= u.id %>" <%= uid === u.id ? 'selected' : '' %>><%= u.name %></option><% }) %></select></div>
+  <div class="btnrow"><button class="btn">Generate</button>
+    <a class="btn ghost" href="?month=<%= ym %>&employee=<%= uid || '' %>&export=csv">Summary CSV</a><a class="btn ghost" href="?month=<%= ym %>&employee=<%= uid || '' %>&export=csv&detail=1">Daily detail CSV</a><button type="button" class="btn ghost" data-print>PDF / Print</button></div>
+</form>
+<h2>Summary — <%= ym %></h2>
+<div class="tw"><table><thead><tr><th>ID</th><th>Employee</th><th class="num">Scheduled days</th><th class="num">Attended</th><th class="num">Absent</th><th class="num">Approved leave</th><th class="num">Late</th><th class="num">Incomplete</th><th class="num">Total hrs</th><th class="num">Avg hrs/day</th><th class="num">Attendance %</th></tr></thead><tbody>
+  <% sums.forEach(function (s) { %><tr><td><%= s.user.emp_no %></td><td><%= s.user.name %></td><td class="num"><%= s.scheduled %></td><td class="num"><%= s.days %></td><td class="num"><%= s.absent %></td><td class="num"><%= s.leave %></td><td class="num"><%= s.late %></td><td class="num"><%= s.incomplete %></td><td class="num"><%= U.hrs(s.mins) %></td><td class="num"><%= U.hrs(s.avg) %></td><td class="num"><%= s.pct %>%</td></tr><% }) %>
+  <% if (!sums.length) { %><tr><td colspan="11" class="empty">No employees.</td></tr><% } %></tbody></table></div>
+<p class="small muted">Scheduled days exclude rest days, holidays, approved leave and days not yet ended. Attendance % = scheduled days attended ÷ scheduled days elapsed.</p>
+
+<h2 style="margin-top:22px">Comparison with previous months</h2>
+<div class="tw"><table><thead><tr><th>Employee</th><% prev.forEach(function (m) { %><th class="num"><%= m %></th><% }) %><th class="num"><%= ym %></th></tr></thead><tbody>
+  <% compare.forEach(function (c, i) { %><tr><td><%= c.u.name %></td><% c.months.forEach(function (m) { %><td class="num"><%= m.pct %>% · <%= m.late %> late · <%= m.absent %> abs</td><% }) %><td class="num"><strong><%= sums[i].pct %>% · <%= sums[i].late %> late · <%= sums[i].absent %> abs</strong></td></tr><% }) %></tbody></table></div>
+
+<h2 style="margin-top:22px">Daily detail</h2>
+<% detail.forEach(function (d) { %>
+  <h3><%= d.u.name %> <span class="muted small"><%= d.u.emp_no %></span></h3>
+  <div class="tw" style="margin-bottom:16px"><table><thead><tr><th>Date</th><th>Status</th><th>In</th><th>Out</th><th class="num">Late (min)</th><th class="num">Hours</th></tr></thead><tbody>
+    <% d.rows.forEach(function (r) { %><tr><td class="nowrap"><%= r.day %> <span class="muted small"><%= ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][U.dow(r.day)] %></span></td><td><%= r.status %></td><td><%= r.rec && r.rec.time_in ? r.rec.time_in.slice(11, 16) : '—' %></td><td><%= r.rec && r.rec.time_out ? r.rec.time_out.slice(11, 16) : '—' %></td><td class="num"><%= r.late_min || '' %></td><td class="num"><%= r.mins ? U.hrs(r.mins) : '' %></td></tr><% }) %></tbody></table></div>
+<% }) %>
+
+<h2>Corrections made this month</h2>
+<div class="tw"><table><thead><tr><th>When</th><th>Employee</th><th>Date</th><th>Original</th><th>Corrected</th><th>Reason</th><th>By</th></tr></thead><tbody>
+  <% corr.forEach(function (c) { %><tr><td><%= c.at.slice(0, 16) %></td><td><%= c.who %></td><td><%= c.day %></td><td><%= (c.old_in || '—').slice(11, 16) || '—' %> → <%= (c.old_out || '—').slice(11, 16) || '—' %></td><td><%= c.new_in.slice(11, 16) %> → <%= c.new_out ? c.new_out.slice(11, 16) : '—' %></td><td><%= c.reason %></td><td><%= c.by_name %></td></tr><% }) %>
+  <% if (!corr.length) { %><tr><td colspan="7" class="empty">No corrections.</td></tr><% } %></tbody></table></div>

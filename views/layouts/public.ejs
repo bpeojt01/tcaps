@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= title ? title + ' · ' : '' %><%= S.business_name %></title>
+<meta name="description" content="<%= S.tagline %>">
+<link rel="stylesheet" href="/static/style.css">
+</head><body class="pub">
+<header class="pubhead"><div class="wrap">
+  <a class="logo" href="/"><i>✈</i><span><%= S.business_name %></span></a>
+  <nav class="nav" aria-label="Main">
+    <% [['home', 'Home'], ['about', 'About Us'], ['services', 'Services'], ['fares', 'Promo Fares'], ['contact', 'Contact Us']].forEach(function (l) { %>
+      <a href="/#<%= l[0] %>" data-spy="<%= l[0] %>"><%= l[1] %></a>
+    <% }) %>
+    <a href="/request" class="cta">Request Assistance</a>
+    <a href="/login" class="muted small">Staff login</a>
+  </nav>
+</div></header>
+<main>
+  <% if (flash && path !== '/') { %><div class="wrap"><div class="flash <%= flash.type %>" role="status"><%= flash.msg %></div></div><% } %>
+  <%- body %>
+</main>
+<footer class="footer">
+  <div class="fwrap cols">
+    <div><a class="logo" href="/"><i>✈</i><span><%= S.business_name %></span></a><p class="muted-d"><%= S.tagline %></p></div>
+    <div><h4>Contact</h4><ul>
+      <% if (S.phones) { %><li><%= S.phones %></li><% } %><% if (S.email) { %><li><%= S.email %></li><% } %><li><%= S.address %></li>
+      <% if (/^https?:\/\//.test(S.facebook)) { %><li><a href="<%= S.facebook %>" target="_blank" rel="noopener noreferrer">Facebook: <%= S.facebook_name || 'Our page' %></a></li><% } else if (S.facebook_name) { %><li>Facebook: <%= S.facebook_name %></li><% } %></ul></div>
+    <div><h4>Office hours</h4><p class="muted-d"><%= S.hours || 'Message or call us to confirm our schedule.' %></p></div>
+  </div>
+  <div class="fwrap fbar">
+    <nav class="flinks" aria-label="Footer"><a href="/#home">Home</a><a href="/#about">About Us</a><a href="/#services">Services</a><a href="/#fares">Promo Fares</a><a href="/#contact">Contact Us</a><a href="/request">Request Assistance</a><a href="/privacy">Privacy Policy</a></nav>
+    <span>© <%= U.today().slice(0, 4) %> <%= S.business_name %></span>
+  </div>
+</footer>
+<script src="/static/app.js" defer></script>
+</body></html>

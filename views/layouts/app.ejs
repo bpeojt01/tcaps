@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title><%= title ? title + ' · ' : '' %><%= S.business_name %> (Staff)</title>
+<link rel="stylesheet" href="/static/style.css">
+<% if (typeof chartJson !== 'undefined') { %><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script><% } %>
+</head><body>
+<%
+const owner = me.role === 'owner';
+const nav = owner ? [
+  ['Dashboard', '/app'], ['Customer Management', '/app/customers'], ['Travel Requests', '/app/requests'], ['Booking Management', '/app/bookings'],
+  ['__', 'Finance'], ['Financial Management', '/app/finance'], ['Payment Records', '/app/payments'], ['Expense Management', '/app/expenses'],
+  ['__', 'People'], ['Employee Management', '/app/employees'], ['My Attendance', '/app/attendance'], ['Attendance Monitoring', '/app/attendance-monitor'], ['Monthly Attendance Reports', '/app/attendance-report'],
+  ['__', 'Website & System'], ['Service Management', '/app/services'], ['Website Content', '/app/content'], ['Audit Logs', '/app/audit'], ['System Settings', '/app/settings'], ['My Profile', '/app/profile'],
+] : [
+  ['Dashboard', '/app'], ['My Attendance', '/app/attendance'], ['Customer Management', '/app/customers'], ['Travel Requests', '/app/requests'], ['Bookings', '/app/bookings'],
+  ['Transactions & Payments', '/app/payments'], ...(me.can_expenses ? [['Expenses', '/app/expenses']] : []), ['My Profile', '/app/profile'],
+];
+%>
+<div class="shell">
+<aside class="side" aria-label="Navigation">
+  <a class="logo" href="/app"><i>✈</i><span><%= S.business_name %></span></a>
+  <% nav.forEach(function (n) { if (n[0] === '__') { %><div class="grp"><%= n[1] %></div><% } else { %>
+    <a class="n <%= (n[1] === '/app' ? path === '/app' : path.startsWith(n[1])) ? 'on' : '' %>" href="<%= n[1] %>"><%= n[0] %></a>
+  <% } }) %>
+  <div class="grp">Account</div>
+  <div class="small" style="padding:0 10px 8px"><%= me.name %> · <%= owner ? 'Owner' : 'Employee' %></div>
+  <form method="post" action="/logout" style="padding:0 10px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn ghost sm" data-noload>Log out</button></form>
+  <p class="small" style="padding:8px 10px"><a href="/" style="color:#9fc3d9">View public website ↗</a></p>
+</aside>
+<div class="main">
+  <div class="topbar"><div class="row"><button class="btn ghost sm menu" data-menu aria-label="Menu">☰ Menu</button><h1><%= title %></h1></div></div>
+  <% if (flash) { %><div class="flash <%= flash.type %>" role="status"><%= flash.msg %></div><% } %>
+  <%- body %>
+</div>
+</div>
+<script src="/static/app.js" defer></script>
+</body></html>

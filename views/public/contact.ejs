@@ -1,0 +1,23 @@
+<section class="section"><div class="wrap grid g2" style="align-items:start">
+  <div>
+    <h1>Contact Us</h1>
+    <div class="card"><dl class="kv">
+      <% if (S.phone) { %><dt>Phone</dt><dd><%= S.phone %></dd><% } %><% if (S.mobile) { %><dt>Mobile</dt><dd><%= S.mobile %></dd><% } %><% if (S.email) { %><dt>Email</dt><dd><%= S.email %></dd><% } %>
+      <dt>Address</dt><dd><%= S.address %></dd><% if (S.hours) { %><dt>Hours</dt><dd><%= S.hours %></dd><% } %>
+      <% if (/^https?:\/\//.test(S.facebook)) { %><dt>Facebook</dt><dd><a href="<%= S.facebook %>" rel="noopener noreferrer" target="_blank"><%= S.facebook %></a></dd><% } %>
+      <% if (/^https?:\/\//.test(S.instagram)) { %><dt>Instagram</dt><dd><a href="<%= S.instagram %>" rel="noopener noreferrer" target="_blank"><%= S.instagram %></a></dd><% } %>
+    </dl></div>
+    <p><a href="/privacy">Privacy policy</a></p>
+  </div>
+  <form class="card" method="post" action="/contact" novalidate>
+    <h2>Send us a message</h2>
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+    <%- include('../partials/field', { name: 'name', label: 'Full name', v, errors, attrs: 'required maxlength="120"' }) %>
+    <%- include('../partials/field', { name: 'email', label: 'Email', type: 'email', v, errors, attrs: 'required maxlength="160"' }) %>
+    <%- include('../partials/field', { name: 'phone', label: 'Phone (optional)', v, errors, attrs: 'maxlength="40"' }) %>
+    <%- include('../partials/field', { name: 'body', label: 'Message', type: 'textarea', v, errors, attrs: 'required maxlength="3000"' }) %>
+    <div class="field <%= errors.consent ? 'has-err' : '' %>"><label><input type="checkbox" name="consent"> I agree to the <a href="/privacy" target="_blank">privacy notice</a>.</label><% if (errors.consent) { %><div class="err"><%= errors.consent %></div><% } %></div>
+    <button class="btn">Send message</button>
+  </form>
+</div></section>

@@ -1,0 +1,7 @@
+<% if (typeof layout === 'string') { %><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Error</title><link rel="stylesheet" href="/static/style.css"></head><body><% } %>
+<div class="wrap"><div class="narrow card" style="text-align:center">
+  <h1><%= code %></h1>
+  <p><%= msg %></p>
+  <p><a class="btn" href="/">Home</a> <a class="btn ghost" href="/app">Staff area</a></p>
+</div></div>
+<% if (typeof layout === 'string') { %></body></html><% } %>

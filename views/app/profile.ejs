@@ -1,0 +1,15 @@
+<div class="grid g2" style="align-items:start">
+  <div class="card"><h2>My details</h2>
+    <dl class="kv"><dt>Name</dt><dd><%= u.name %></dd><dt>Employee no.</dt><dd><%= u.emp_no %></dd><dt>Username</dt><dd><%= u.username %></dd><dt>Email</dt><dd><%= u.email || '—' %></dd><dt>Role</dt><dd><%= u.role %></dd>
+    <dt>Schedule</dt><dd><%= u.sched_start %> – <%= u.sched_end %>, grace <%= u.grace_min %> min, break <%= u.break_min %> min</dd></dl>
+    <p class="muted small">To change these details, ask the owner.</p></div>
+  <form class="card" method="post" action="/app/profile/password">
+    <h2>Change password</h2>
+    <% if (me.must_change_pw) { %><div class="flash err">You must change your password before continuing.</div><% } %>
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field"><label for="c">Current password</label><input id="c" type="password" name="current" autocomplete="current-password" required></div>
+    <div class="field"><label for="n">New password</label><input id="n" type="password" name="next" minlength="10" autocomplete="new-password" required><div class="small muted">At least 10 characters, with letters and numbers.</div></div>
+    <div class="field"><label for="k">Confirm new password</label><input id="k" type="password" name="confirm" autocomplete="new-password" required></div>
+    <button class="btn">Update password</button>
+  </form>
+</div>

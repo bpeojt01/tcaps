@@ -1,0 +1,91 @@
+<section class="hero" id="home"><div class="wrap">
+  <div>
+    <span class="eyebrow"><%= S.location %></span>
+    <h1>Book smart. <em>Travel with confidence.</em></h1>
+    <p class="lead"><strong style="color:#fff"><%= S.tagline %></strong> Flights, hotels and travel needs arranged by real people — from booking hanggang biyahe.</p>
+    <div class="row"><a class="btn big" href="/request">Request Travel Assistance</a> <a class="btn ghost big" href="#fares">See promo fares</a></div>
+    <div class="hero-trust"><span><b>Easy</b> booking help</span><span><b>Affordable</b> options</span><span><b>Reliable</b> assistance</span></div>
+  </div>
+  <aside class="glass" aria-label="How it works">
+    <h3>How it works</h3>
+    <ol class="steps">
+      <li><div><b>Send your request</b><span>Fill in the short form — no account needed.</span></div></li>
+      <li><div><b>We source options</b><span>Our team checks airlines and hotels for you.</span></div></li>
+      <li><div><b>Confirm &amp; we book</b><span>Approve the quotation, pay, and receive your confirmation.</span></div></li>
+    </ol>
+    <div class="note">Submitting a request does not confirm a ticket, reservation or payment.</div>
+  </aside>
+</div></section>
+
+<section class="section alt" id="about"><div class="wrap" style="max-width:900px">
+  <div class="section-head"><span class="eyebrow">About us</span><h2><%= S.business_name %></h2></div>
+  <p style="font-size:1.05rem;white-space:pre-line"><%= S.about %></p>
+  <div class="grid g2" style="margin:24px 0">
+    <div class="card"><h3>Our mission</h3><p class="muted" style="margin:0"><%= S.mission %></p></div>
+    <div class="card"><h3>Our vision</h3><p class="muted" style="margin:0"><%= S.vision %></p></div>
+  </div>
+  <p><% S.values.split(',').forEach(function (v) { %><span class="badge b-info" style="margin:0 6px 6px 0"><%= v.trim() %></span><% }) %></p>
+</div></section>
+
+<section class="section" id="services"><div class="wrap">
+  <div class="section-head"><span class="eyebrow">Services</span><h2>What we can help you with</h2>
+    <p class="muted">All services are arranged by our team on your behalf. Submit a request and we will send options and a quotation.</p></div>
+  <div class="cards">
+    <% services.forEach(function (s) { %>
+      <div class="svc"><div class="ic" aria-hidden="true"><%= s.icon %></div><h3><%= s.name %></h3><p class="muted"><%= s.description %></p>
+      <a class="btn ghost sm" href="/request?service=<%= encodeURIComponent(s.type) %>">Request assistance →</a></div>
+    <% }) %>
+  </div>
+</div></section>
+
+<% if (S.fareList.length) { %>
+<section class="section alt" id="fares"><div class="wrap">
+  <div class="section-head"><span class="eyebrow">Promo fares</span><h2><%= S.fares_title || 'Lowest fares' %></h2>
+    <p class="muted"><%= S.fares_note %></p></div>
+  <div class="tw"><table class="fares"><thead><tr><th>Route</th><th class="num">One-way fare</th><th></th></tr></thead><tbody>
+    <% S.fareList.forEach(function (f) { %>
+      <tr><td><strong><%= f.route %></strong></td><td class="num"><span class="price"><%= U.peso(f.cents) %></span></td>
+      <td class="right"><a class="btn sm" href="/request?service=Domestic%20flight&amp;origin=<%= encodeURIComponent(f.from) %>&amp;destination=<%= encodeURIComponent(f.to) %>">Request this fare</a></td></tr>
+    <% }) %></tbody></table></div>
+  <% if (S.partnerList.length) { %><p class="partners"><span class="muted small">Airlines &amp; carriers we work with:</span> <% S.partnerList.forEach(function (p) { %><span class="chip"><%= p %></span><% }) %></p><% } %>
+</div></section>
+<% } %>
+
+<% if (S.whyList.length) { %>
+<section class="section"><div class="wrap">
+  <div class="section-head"><span class="eyebrow">Bakit mag-book sa travel agency?</span><h2>Guidance ka rin lalo na kung may tanong o aberya sa booking.</h2></div>
+  <div class="cards why">
+    <% S.whyList.forEach(function (w) { %><div class="svc"><h3><%= w.t %></h3><p class="muted"><%= w.d %></p></div><% }) %>
+  </div>
+</div></section>
+<% } %>
+
+<section class="section alt" id="contact"><div class="wrap">
+  <div class="cta-band" style="margin-bottom:40px">
+    <div><h2>Ready to plan your next trip?</h2><p>Send us your travel details and we will get back to you with options.</p></div>
+    <a class="btn big" href="/request">Request Travel Assistance</a>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div><span class="eyebrow">Contact us</span><h2>Talk to us</h2>
+      <div class="card"><dl class="kv">
+        <% if (S.phone) { %><dt>Phone</dt><dd><%= S.phone %></dd><% } %><% if (S.mobile) { %><dt>Mobile</dt><dd><%= S.mobile %></dd><% } %><% if (S.email) { %><dt>Email</dt><dd><%= S.email %></dd><% } %>
+        <dt>Visit us</dt><dd><%= S.address %></dd><% if (S.hours) { %><dt>Hours</dt><dd><%= S.hours %></dd><% } %>
+        <% if (S.facebook_name || /^https?:\/\//.test(S.facebook)) { %><dt>Facebook</dt><dd><% if (/^https?:\/\//.test(S.facebook)) { %><a href="<%= S.facebook %>" rel="noopener noreferrer" target="_blank"><%= S.facebook_name || S.facebook %></a><% } else { %><%= S.facebook_name %><% } %></dd><% } %>
+        <% if (/^https?:\/\//.test(S.instagram)) { %><dt>Instagram</dt><dd><a href="<%= S.instagram %>" rel="noopener noreferrer" target="_blank"><%= S.instagram %></a></dd><% } %>
+      </dl></div>
+      <p><a href="/privacy">Privacy policy</a></p>
+    </div>
+    <form class="card" method="post" action="/contact" novalidate>
+      <h2>Send us a message</h2>
+      <% if (flash) { %><div class="flash <%= flash.type %>" role="status"><%= flash.msg %></div><% } %>
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+      <%- include('../partials/field', { name: 'name', label: 'Full name', v: {}, errors: {}, attrs: 'required maxlength="120"' }) %>
+      <%- include('../partials/field', { name: 'email', label: 'Email', type: 'email', v: {}, errors: {}, attrs: 'required maxlength="160"' }) %>
+      <%- include('../partials/field', { name: 'phone', label: 'Phone (optional)', v: {}, errors: {}, attrs: 'maxlength="40"' }) %>
+      <%- include('../partials/field', { name: 'body', label: 'Message', type: 'textarea', v: {}, errors: {}, attrs: 'required maxlength="3000"' }) %>
+      <div class="field"><label style="font-weight:500"><input type="checkbox" name="consent"> I agree to the <a href="/privacy" target="_blank">privacy notice</a>.</label></div>
+      <button class="btn">Send message</button>
+    </form>
+  </div>
+</div></section>

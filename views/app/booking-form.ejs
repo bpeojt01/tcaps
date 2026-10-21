@@ -1,0 +1,24 @@
+<form class="card" method="post" style="max-width:820px" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="request_id" value="<%= v.request_id || '' %>">
+  <div class="grid g2">
+    <% if (isNew) { %><%- include('../partials/field', { name: 'customer_id', label: 'Customer *', type: 'select', options: customers.map(function (c) { return [c.id, c.code + ' — ' + c.name]; }), v, errors }) %>
+    <% } else { %><input type="hidden" name="customer_id" value="<%= v.customer_id %>"><div class="field"><label>Customer</label><div><a href="/app/customers/<%= v.customer_id %>"><%= v.customer %></a></div></div><% } %>
+    <%- include('../partials/field', { name: 'service_type', label: 'Service type *', type: 'select', options: B.SERVICE_TYPES, v, errors }) %>
+    <%- include('../partials/field', { name: 'supplier', label: 'Supplier / booking provider', v, errors, attrs: 'maxlength="160"' }) %>
+    <%- include('../partials/field', { name: 'status', label: 'Booking status *', type: 'select', options: B.BOOKING_STATUSES, v, errors, hint: 'Quoted → Confirmed → Completed. Only Confirmed/Completed count as confirmed sales.' }) %>
+  </div>
+  <%- include('../partials/field', { name: 'details', label: 'Travel / reservation details', type: 'textarea', v, errors }) %>
+  <div class="grid g4">
+    <%- include('../partials/field', { name: 'supplier_cost', label: 'Supplier cost (₱)', type: 'number', v, errors, attrs: 'step="0.01" min="0"' }) %>
+    <%- include('../partials/field', { name: 'selling_price', label: 'Selling price (₱)', type: 'number', v, errors, attrs: 'step="0.01" min="0"' }) %>
+    <%- include('../partials/field', { name: 'service_fee', label: 'Service fee / markup (₱)', type: 'number', v, errors, attrs: 'step="0.01" min="0"' }) %>
+    <%- include('../partials/field', { name: 'discount', label: 'Discount (₱)', type: 'number', v, errors, attrs: 'step="0.01" min="0"' }) %>
+  </div>
+  <p class="muted small">Total payable = selling price + service fee − discount. Margin = total payable − supplier cost.</p>
+  <div class="grid g2">
+    <%- include('../partials/field', { name: 'confirmation_ref', label: 'Booking confirmation / ticket reference', v, errors, attrs: 'maxlength="80"' }) %>
+    <%- include('../partials/field', { name: 'assigned_to', label: 'Assigned employee', type: 'select', options: staff.map(function (s) { return [s.id, s.name]; }), v, errors }) %>
+  </div>
+  <%- include('../partials/field', { name: 'remarks', label: 'Remarks', type: 'textarea', v, errors }) %>
+  <button class="btn">Save booking</button> <a class="btn ghost" href="<%= v.id ? '/app/bookings/' + v.id : '/app/bookings' %>">Cancel</a>
+</form>

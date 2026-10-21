@@ -1,0 +1,3 @@
+<%# locals: list, label, key, cls %>
+<% const p = new URLSearchParams(list.qs); const cur = p.get('sort') === key; const dir = p.get('dir') === 'asc' ? 'asc' : 'desc'; p.set('sort', key); p.set('dir', cur && dir === 'desc' ? 'asc' : 'desc'); %>
+<th class="<%= typeof cls === 'undefined' ? '' : cls %>"><a href="?<%= p.toString() %>"><%= label %><%= cur ? (dir === 'asc' ? ' ▲' : ' ▼') : '' %></a></th>

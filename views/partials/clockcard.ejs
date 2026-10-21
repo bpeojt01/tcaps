@@ -1,0 +1,13 @@
+<%# locals: me, rec, mins %>
+<div class="card">
+  <div class="muted small">Philippine time (Asia/Manila)</div>
+  <div class="clock" data-clock data-now="<%= U.now() %>"><%= U.now() %></div>
+  <p><strong><%= me.name %></strong> ·
+    <% if (!rec) { %><span class="badge">Not timed in</span>
+    <% } else if (!rec.time_out) { %><span class="badge b-info">Clocked in <%= rec.time_in.slice(11, 16) %></span> <% if (rec.is_late) { %><span class="badge b-warn">Late <%= rec.late_min %> min</span><% } else { %><span class="badge b-ok">On time</span><% } %>
+    <% } else { %><span class="badge b-ok">Done: <%= rec.time_in.slice(11, 16) %> – <%= rec.time_out.slice(11, 16) %> (<%= U.hrs(mins) %> h)</span><% } %></p>
+  <div class="row">
+    <form method="post" action="/app/attendance/in"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn" <%= rec ? 'disabled' : '' %>>Time In</button></form>
+    <form method="post" action="/app/attendance/out"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn alt" <%= !rec || rec.time_out ? 'disabled' : '' %>>Time Out</button></form>
+  </div>
+</div>
